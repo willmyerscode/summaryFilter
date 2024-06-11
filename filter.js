@@ -525,41 +525,43 @@ class WMSummaryBlock {
     return fromSupabase;
   }
   async syncCollectionAndDatabase() {
-    this.refreshButton.innerText = "Syncing";
-    // Get Database Items
-    const currentData = await this.Supabase.getItemsByCollectionUrl(this.url);
+    await Utilities.syncCollectionAndDatabase(this.url);
+    // this.refreshButton.innerText = "Syncing";
+    // // Get Database Items
+    // const currentData = await this.Supabase.getItemsByCollectionUrl(this.url);
 
-    // Get Live Items from Squarespace
-    const {
-      items: collectionData,
-      collection,
-      website,
-    } = await this.Squarespace.getItemsFromCollection(this.url);
+    // // Get Live Items from Squarespace
+    // const {
+    //   items: collectionData,
+    //   collection,
+    //   website,
+    // } = await this.Squarespace.getItemsFromCollection(this.url);
 
-    // Diff the database & Squarespace
-    const {added, changed, removed} = this.diffSquarespaceAndDatabase(
-      currentData,
-      collectionData
-    );
+    // // Diff the database & Squarespace
+    // const {added, changed, removed} = this.diffSquarespaceAndDatabase(
+    //   currentData,
+    //   collectionData
+    // );
 
-    // Remove Deleted Pages
-    if (removed.length) {
-      const deletePromises = removed.map(id => this.Supabase.deleteItem(id));
-      try {
-        await Promise.all(deletePromises);
-      } catch (error) {
-        console.error("Failed to delete one or more items:", error);
-      }
-    }
+    // // Remove Deleted Pages
+    // if (removed.length) {
+    //   const deletePromises = removed.map(id => this.Supabase.deleteItem(id));
+    //   try {
+    //     await Promise.all(deletePromises);
+    //   } catch (error) {
+    //     console.error("Failed to delete one or more items:", error);
+    //   }
+    // }
 
-    // Save All other data to database
-    this.refreshButton.innerText = "Updating Database";
-    const batchSize = this.settings.batchSize;
-    for (let i = 0; i < collectionData.length; i += batchSize) {
-      const batch = collectionData.slice(i, i + batchSize);
-      const res = await this.Supabase.saveItems(batch, this.url);
-      console.log(res);
-    }
+    // // Save All other data to database
+    // this.refreshButton.innerText = "Updating Database";
+    // const batchSize = this.settings.batchSize;
+
+    // for (let i = 0; i < collectionData.length; i += batchSize) {
+    //   const batch = collectionData.slice(i, i + batchSize);
+    //   const res = await this.Supabase.saveItems(batch, this.url);
+    //   console.log(res);
+    // }
 
     // Reset plugin data
     this.data = await this.Supabase.getItemsByCollectionUrl(this.url);
@@ -779,7 +781,6 @@ class WMSummaryBlock {
         button.click();
       }
     });
-
   }
   addfilterPanelOpenClickEvent() {
     const handleClick = () => {
